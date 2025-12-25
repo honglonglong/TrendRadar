@@ -168,4 +168,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
             pages project list
-            pages deploy output --project-name=${{ secrets.CLOUDFLARE_PAGE_PROJECT }}
+            pages deploy output --project-name=${{ vars.CLOUDFLARE_PAGE_PROJECT }}
