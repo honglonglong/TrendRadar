@@ -178,4 +178,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGE_PROJECT: ${{ vars.CLOUDFLARE_PAGE_PROJECT }}
         run: |
-          python TrendRadar/tools/delete_cloudflare_page_deployment.py
+          python tools/delete_cloudflare_page_deployment.py
