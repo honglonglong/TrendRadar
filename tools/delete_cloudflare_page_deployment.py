@@ -1,11 +1,17 @@
 import requests
+import os
+
+# Thanks to https://geekflare.com/dev/delete-cloudflare-pages-old-deployment/
 
 # Cloudflare Config
-API_TOKEN = "HEMOQihkibauMlyDNCuV5j-FFs7s4lP7HpJO1I9m"
-ACCOUNT_ID = "894734fd7597c8372dab6a4f6f209461"
-PROJECT_NAME = "trendradar"
+# API_TOKEN = ""
+# ACCOUNT_ID = ""
+# PROJECT_NAME = "trendradar"
+# KEEP_DEPLOYMENTS = 3
+API_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "未设置")
+ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "未设置")
+PROJECT_NAME = os.environ.get("CLOUDFLARE_PAGE_PROJECT", "未设置")
 KEEP_DEPLOYMENTS = 3
-#curl "https://api.cloudflare.com/client/v4/accounts/894734fd7597c8372dab6a4f6f209461/tokens/verify" -H "Authorization: Bearer HEMOQihkibauMlyDNCuV5j-FFs7s4lP7HpJO1I9m"
 
 BASE_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/pages/projects/{PROJECT_NAME}/deployments"
 
