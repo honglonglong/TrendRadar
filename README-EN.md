@@ -13,8 +13,8 @@ Deploy in <strong>30 seconds</strong> — Say goodbye to endless scrolling, only
 [![GitHub Stars](https://img.shields.io/github/stars/sansan0/TrendRadar?style=flat-square&logo=github&color=yellow)](https://github.com/sansan0/TrendRadar/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sansan0/TrendRadar?style=flat-square&logo=github&color=blue)](https://github.com/sansan0/TrendRadar/network/members)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/version-v5.2.0-blue.svg)](https://github.com/sansan0/TrendRadar)
-[![MCP](https://img.shields.io/badge/MCP-v3.1.6-green.svg)](https://github.com/sansan0/TrendRadar)
+[![Version](https://img.shields.io/badge/version-v5.4.0-blue.svg)](https://github.com/sansan0/TrendRadar)
+[![MCP](https://img.shields.io/badge/MCP-v3.1.7-green.svg)](https://github.com/sansan0/TrendRadar)
 [![RSS](https://img.shields.io/badge/RSS-Feed_Support-orange.svg?style=flat-square&logo=rss&logoColor=white)](https://github.com/sansan0/TrendRadar)
 [![AI Translation](https://img.shields.io/badge/AI-Multi--Language-purple.svg?style=flat-square)](https://github.com/sansan0/TrendRadar)
 
@@ -158,8 +158,8 @@ After communication, the author indicated no concerns about server pressure, but
 
 
 - **GitHub Issues**: Suitable for targeted answers. Please provide complete info when asking (screenshots, error logs, system environment, etc.).
-- **Official Account**: Suitable for quick consultation. Suggest priority to communicate in public comment area of related articles. If private message, please use polite language 😉
-- **Contact**: path@linux.do
+- **Official Account**: Suggested for interaction. Please prioritize public comments under relevant articles. If you need to ask questions, liking, recommending, or sharing articles to show support is highly appreciated! (´▽`ʃ♡ƪ).
+  <br>*(Friendly Reminder: This is a free open-source project, not a commercial service. Please check the documentation first if you encounter issues. Patience and courtesy are expected. I cannot respond to demands for customer support or emotional accusations. Thank you for understanding. Additionally, significant effort went into the documentation; it is strongly recommended to read the [**🚀 Quick Start**](#-quick-start) section first, where most deployment answers can be found.)*
 
 
 | Official Account | WeChat Appreciation | Alipay Appreciation |
@@ -172,6 +172,31 @@ After communication, the author indicated no concerns about server pressure, but
 
 >**📌 Check Latest Updates**: **[Original Repository Changelog](https://github.com/sansan0/TrendRadar?tab=readme-ov-file#-changelog)**:
 - **Tip**: Check [Changelog] to understand specific [Features]
+
+### 2026/01/23 - v5.4.0
+
+- Added independent control for AI analysis mode, options: follow_report | daily | current | incremental
+- Added time window control for AI analysis, supporting custom execution periods and daily frequency limits
+- Added configuration file version management function
+- Fixed several bugs
+
+### 2026/01/19 - v5.3.0
+
+> **Major Refactor: AI Module Migration to LiteLLM**
+
+- **Unified AI Interface**: Replaced manual implementation with LiteLLM, supporting 100+ AI providers
+- **Simplified Configuration**: Removed `provider` field, now using `model: "provider/model_name"` format
+- **New Features**: Auto-retry (`num_retries`), fallback models (`fallback_models`)
+- **Configuration Changes**:
+  - `ai.provider` → Removed (merged into model)
+  - `ai.base_url` → `ai.api_base`
+  - `AI_PROVIDER` environment variable → Removed
+  - `AI_BASE_URL` environment variable → `AI_API_BASE`
+- **Model Format Examples**:
+  - DeepSeek: `deepseek/deepseek-chat`
+  - OpenAI: `openai/gpt-4o`
+  - Gemini: `gemini/gemini-2.5-flash`
+  - Anthropic: `anthropic/claude-3-5-sonnet`
 
 ### 2026/01/17 - v5.2.0
 
@@ -1856,13 +1881,15 @@ For specific additions, visit [project source code](https://github.com/ourongxin
 
 ```yaml
 platforms:
-  - id: "toutiao"
-    name: "Toutiao"
-  - id: "baidu"
-    name: "Baidu Hot Search"
-  - id: "wallstreetcn-hot"
-    name: "Wallstreetcn"
-  # Add more platforms...
+  enabled: true                       # Enable trending platform crawling
+  sources:
+    - id: "toutiao"
+      name: "Toutiao"
+    - id: "baidu"
+      name: "Baidu Hot Search"
+    - id: "wallstreetcn-hot"
+      name: "Wallstreetcn"
+    # Add more platforms...
 ```
 
 > 💡 **Shortcut**: If you don't know how to read source code, you can copy from others' organized [Platform Configuration Summary](https://github.com/sansan0/TrendRadar/issues/95)
@@ -2838,7 +2865,7 @@ After MCP service starts, configure based on your client:
 <summary>👉 Click to expand: <strong>Customize Push Style and Content</strong></summary>
 <br>
 
-**Configuration Location:** `report` section in `config/config.yaml`
+**Configuration Location:** `report` and `display` sections in `config/config.yaml`
 
 ```yaml
 report:
@@ -2847,7 +2874,14 @@ report:
   rank_threshold: 5                # Ranking highlight threshold
   sort_by_position_first: false    # Sorting priority
   max_news_per_keyword: 0          # Maximum display count per keyword
-  reverse_content_order: false     # Content order configuration
+
+display:
+  region_order:                    # Region display order (v5.2.0 new)
+    - new_items                    # New trending section
+    - hotlist                      # Hotlist section
+    - rss                          # RSS subscription section
+    - standalone                   # Independent display section
+    - ai_analysis                  # AI analysis section
 ```
 
 #### Configuration Details
@@ -2859,7 +2893,7 @@ report:
 | `rank_threshold` | int | `5` | Ranking highlight threshold, news with rank ≤ this value will be displayed in bold |
 | `sort_by_position_first` | bool | `false` | Sorting priority: `false`=sort by news count, `true`=sort by config position |
 | `max_news_per_keyword` | int | `0` | Maximum display count per keyword, `0`=unlimited |
-| `reverse_content_order` | bool | `false` | Content order: `false`=trending keywords stats first, `true`=new trending news first |
+| `display.region_order` | list | See config above | Adjust list order to control region display positions |
 
 #### Display Mode Configuration (v4.6.0 New)
 
@@ -2886,23 +2920,27 @@ Controls how news is grouped in push messages and HTML reports:
   2. [Trump] Trump announces major policy #2 - 09:15 (3 times)
 ```
 
-#### Content Order Configuration (v3.5.0 New)
+#### Region Display Order (region_order)
 
-Controls display order of two content sections in push messages and HTML reports:
+Control the display position of each section in push messages by adjusting the order of `display.region_order` list.
 
-| Config Value | Display Order |
-|-------------|--------------|
-| `false` (default) | ① Trending Keywords Stats → ② New Trending News |
-| `true` | ① New Trending News → ② Trending Keywords Stats |
+**Default Order**: New Items → Hotlist → RSS → Standalone → AI Analysis
 
-**Use Cases:**
-- `false` (default): Suitable for users focusing on keyword match results, view categorized stats first
-- `true`: Suitable for users focusing on latest updates, prioritize viewing new trending topics
+**Custom Example**: Want AI analysis at the top?
 
-**Docker Environment Variable:**
-```bash
-REVERSE_CONTENT_ORDER=true
+```yaml
+display:
+  region_order:
+    - ai_analysis                  # Move to first line
+    - new_items
+    - hotlist
+    - rss
+    - standalone
 ```
+
+**Note**: A region will only be displayed when both conditions are met:
+1. Listed in `region_order`
+2. Corresponding switch in `display.regions` is `true`
 
 #### Sorting Priority Configuration
 
@@ -3220,19 +3258,28 @@ The simplest way is via environment variables (Recommended for GitHub Secrets or
 |--------------|-------|-------------|
 | `AI_ANALYSIS_ENABLED` | `true` | Enable switch |
 | `AI_API_KEY` | `sk-xxxxxx` | Your API Key |
-| `AI_PROVIDER` | `deepseek` | AI Provider (see table below) |
-| `AI_MODEL` | `deepseek-chat` | Model Name |
+| `AI_MODEL` | `deepseek/deepseek-chat` | Model identifier (format: `provider/model`) |
 
-**Supported AI Providers**:
+**Supported AI Providers** (Based on LiteLLM, supports 100+ providers):
 
-| Provider | AI_PROVIDER Value | Default Model (AI_MODEL) |
-|----------|-------------------|------------------------|
-| **DeepSeek** (Recommended) | `deepseek` | `deepseek-chat` |
-| **OpenAI** | `openai` | `gpt-4o` |
-| **Google Gemini** | `gemini` | `gemini-1.5-flash` |
-| **Custom** (OneAPI) | `custom` | Requires `AI_BASE_URL` |
+| Provider | AI_MODEL Value | Description |
+|----------|----------------|-------------|
+| **DeepSeek** (Recommended) | `deepseek/deepseek-chat` | Excellent cost-performance ratio for high-frequency analysis |
+| **OpenAI** | `openai/gpt-4o`<br>`openai/gpt-4o-mini` | GPT-4o series |
+| **Google Gemini** | `gemini/gemini-1.5-flash`<br>`gemini/gemini-1.5-pro` | Gemini series |
+| **Custom API** | Any format | Use with `AI_API_BASE` |
 
-> 💡 **Tip**: DeepSeek offers excellent performance/price ratio, highly suitable for high-frequency news analysis.
+> 💡 **New Feature**: Now based on [LiteLLM](https://github.com/BerriAI/litellm) unified interface, supporting 100+ AI providers with simpler configuration and better error handling.
+
+**Optional Configurations**:
+
+| Variable Name | Default | Description |
+|--------------|---------|-------------|
+| `AI_API_BASE` | (auto) | Custom API endpoint (e.g., OneAPI, local models) |
+| `AI_TEMPERATURE` | `1.0` | Sampling temperature (0-2, higher = more random) |
+| `AI_MAX_TOKENS` | `5000` | Maximum tokens to generate |
+| `AI_TIMEOUT` | `120` | Request timeout (seconds) |
+| `AI_NUM_RETRIES` | `2` | Number of retries on failure |
 
 #### Advanced: AI Translation
 
